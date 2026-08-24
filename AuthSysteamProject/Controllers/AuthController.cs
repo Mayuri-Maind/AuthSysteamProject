@@ -1,6 +1,6 @@
 ﻿using AuthSysteamProject.DataAccessLayer;
 using AuthSysteamProject.Model;
-using Microsoft.AspNetCore.Http;
+//using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthSysteamProject.Controllers
@@ -9,24 +9,46 @@ namespace AuthSysteamProject.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        public readonly IAuthDL _authDL;
+        private readonly IAuthDL _authDL;
+
         public AuthController(IAuthDL authDL)
         {
             _authDL = authDL;
         }
 
-        public async Task<IActionResult> SignUp(SignUpRequest singUpRequest)  //for status ok
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
-            SignUpResponse response = new SignUpResponse();
+            LoginResponse response = new LoginResponse();
+
             try
             {
-
+                response = await _authDL.Login(loginRequest);
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
                 response.Message = ex.Message;
             }
+
+            return Ok(response);
+        }
+
+        [HttpPost("signup")]
+        public async Task<IActionResult> SignUp(SignUpRequest signUpRequest)
+        {
+            SignUpResponse response = new SignUpResponse();
+
+            try
+            {
+                response = await _authDL.SignUp(signUpRequest);
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = ex.Message;
+            }
+
             return Ok(response);
         }
     }
